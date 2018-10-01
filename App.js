@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
   row:{
     flex:1,
     
-    backgroundColor:'#ECECEC',
+    backgroundColor:'#ECECEd',
     marginBottom:5,
     flexDirection:'row'
   },
