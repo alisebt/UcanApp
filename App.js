@@ -1,9 +1,9 @@
 import React, {Component} from 'react';
 import {create} from 'apisauce';
-import {Platform, StyleSheet, Text, View,ActivityIndicator,FlatList,Image,TouchableOpacity,ScrollView,Dimensions} from 'react-native';
 import HTML from 'react-native-render-html';
 import { createStackNavigator } from 'react-navigation';
-
+import {StyleSheet, Text, View,ActivityIndicator,FlatList,Image,TouchableOpacity,ScrollView,Dimensions} from 'react-native';
+import { ListItem } from 'react-native-elements';
 
 type Props = {};
 class App extends Component<Props> {
@@ -47,7 +47,7 @@ class App extends Component<Props> {
             <TouchableOpacity onPress={()=>{
                   //alert(item.CategoryID);
                     /* 1. Navigate to the Details route with params */
-                  this.props.navigation.navigate('Details', {
+                  this.props.navigation.navigate('CategoryContent', {
                     itemId: item.CategoryID,
                     otherParam: 'anything you want here',
                   });
@@ -63,24 +63,30 @@ class App extends Component<Props> {
   }
 }
 
-class DetailsScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state ={ isLoading: true}
-  }
+class CategoryContentScreen extends React.Component {
+  state = {
+    seed: 1,
+    page: 0,
+    categories: [],
+    isLoading: false,
+    isRefreshing: false,
+  };
 
-  componentDidMount(){
+  loadCategoryList =()=>{
     const { navigation } = this.props;
     const itemId = navigation.getParam('itemId', 'NO-ID');
+    const { page } = this.state;
+    this.setState({ isLoading: true });
     const api = create({
       baseURL: 'https://core.ucan.ir/mobile/request.asmx',
       headers: {'Content-Type': 'application/json'}
     })
-    api.post('/GetContentByCategoryList', JSON.stringify({request: {RequestID:itemId}}))
+    api.post('/GetContentByCategoryList', JSON.stringify({request: {RequestID:itemId,PageIndex:page,PageSize:15}}))
     .then((response)=>{
+      const arrayData = [...this.state.categories, ...response.data.Result.GetContentByCategoryList]
       this.setState({
-        isLoading: false,
-        dataSource: response.data.Result.GetContentByCategoryList
+        categories: page === 0 ? response.data.Result.GetContentByCategoryList : arrayData,
+        isRefreshing: false
      });
     })
     .then(()=>{
@@ -89,30 +95,54 @@ class DetailsScreen extends React.Component {
     })
   }
 
+  handleRefresh = () => {
+    this.setState({
+      seed: this.state.seed + 1,
+      isRefreshing: true,
+    }, () => {
+      this.loadCategoryList();
+    });
+  };
+
+  handleLoadMore = () => {
+    this.setState({
+      page: this.state.page + 1
+    }, () => {
+      this.loadCategoryList();
+    });
+  };
+  
+  componentDidMount(){
+    this.loadCategoryList();
+  }
+  
   render() {
-   
-    //const otherParam = navigation.getParam('otherParam', 'some default value');
+    const { categories, isRefreshing } = this.state;
     return (
-      <FlatList
-          data={this.state.dataSource}
-          keyExtractor={ (item) => item.CategoryID }
-          renderItem={(
-            {item}) => 
-            <TouchableOpacity onPress={()=>{
-                  //alert(item.CategoryID);
-                    /* 1. Navigate to the Details route with params */
-                  this.props.navigation.navigate('ContentDetails', {
-                    itemId: item.ContentID,
-                    otherParam: 'anything you want here',
-                  });
-              }}>
-              <View style={styles.row}>
-                <Image style={styles.rowimage} source={{uri:item.ThumbImage}}  ></Image>
-                <Text style={styles.rowtext}>{item.Title} </Text>
-              </View>
-            </TouchableOpacity>
-          }
-        />
+      <View>
+        <FlatList
+            data={categories}
+            renderItem={(
+              {item}) => 
+              <TouchableOpacity onPress={()=>{
+                    this.props.navigation.navigate('ContentDetails', {
+                      itemId: item.ContentID
+                    });
+                }}>
+                <ListItem
+                    roundAvatar
+                    title={item.Title}
+                    avatar={{uri: item.ThumbImage}}
+                  />
+              </TouchableOpacity>
+            }
+            keyExtractor={ (item) => item.ContentID }
+            refreshing={isRefreshing}
+            onRefresh={this.handleRefresh}
+            onEndReached={this.handleLoadMore}
+            onEndReachedThreshold={0.001}
+          />
+        </View>
     );
   }
 }
@@ -167,8 +197,8 @@ export default createStackNavigator({
   Home: {
     screen: App
   },
-  Details:{
-    screen: DetailsScreen
+  CategoryContent:{
+    screen: CategoryContentScreen
   },
   ContentDetails:{
     screen: ContentDetailsScreen
