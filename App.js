@@ -3,7 +3,7 @@ import {create} from 'apisauce';
 import HTML from 'react-native-render-html';
 import { createStackNavigator } from 'react-navigation';
 import {StyleSheet, Text, View,ActivityIndicator,FlatList,Image,TouchableOpacity,ScrollView,Dimensions} from 'react-native';
-import { ListItem } from 'react-native-elements';
+import { ListItem,Avatar } from 'react-native-elements';
 
 type Props = {};
 class App extends Component<Props> {
@@ -30,6 +30,29 @@ class App extends Component<Props> {
     })
   }
   
+  renderItem = ({ item }) => (
+    <TouchableOpacity onPress={()=>{
+            this.props.navigation.navigate('CategoryContent', {
+                    itemId: item.CategoryID,
+                    otherParam: 'anything you want here',
+                  });
+        }}>
+        <ListItem
+            key={item.CategoryID}
+            avatar={<Avatar
+              large
+              rounded
+              source={{uri: item.Image}}
+            />}
+            subtitle={
+              <View>
+                <Text style={{fontSize:25}}>{item.Title}</Text>
+              </View>
+            }
+          />
+    </TouchableOpacity>
+)
+
   render() {
     if(this.state.isLoading){
       return(
@@ -42,22 +65,7 @@ class App extends Component<Props> {
       <FlatList
           data={this.state.dataSource}
           keyExtractor={ (item) => item.CategoryID }
-          renderItem={(
-            {item}) => 
-            <TouchableOpacity onPress={()=>{
-                  //alert(item.CategoryID);
-                    /* 1. Navigate to the Details route with params */
-                  this.props.navigation.navigate('CategoryContent', {
-                    itemId: item.CategoryID,
-                    otherParam: 'anything you want here',
-                  });
-              }}>
-              <View style={styles.row}>
-                <Image style={styles.rowimage} source={{uri:item.Image}}  ></Image>
-                <Text style={styles.rowtext}>{item.Title} </Text>
-              </View>
-            </TouchableOpacity>
-          }
+          renderItem={this.renderItem}
         />
      )
   }
@@ -116,26 +124,35 @@ class CategoryContentScreen extends React.Component {
     this.loadCategoryList();
   }
   
+  renderItem = ({ item }) => (
+            <TouchableOpacity onPress={()=>{
+                    this.props.navigation.navigate('ContentDetails', {
+                      itemId: item.ContentID
+                    });
+                }}>
+                <ListItem
+                    key={item.CategoryID}
+                    avatar={<Avatar
+                      large
+                      rounded
+                      source={{uri: item.ThumbImage}}
+                    />}
+                    subtitle={
+                      <View>
+                        <Text style={{fontSize:20}}>{item.Title}</Text>
+                      </View>
+                    }
+                  />
+            </TouchableOpacity>
+  )
+
   render() {
     const { categories, isRefreshing } = this.state;
     return (
       <View>
         <FlatList
             data={categories}
-            renderItem={(
-              {item}) => 
-              <TouchableOpacity onPress={()=>{
-                    this.props.navigation.navigate('ContentDetails', {
-                      itemId: item.ContentID
-                    });
-                }}>
-                <ListItem
-                    roundAvatar
-                    title={item.Title}
-                    avatar={{uri: item.ThumbImage}}
-                  />
-              </TouchableOpacity>
-            }
+            renderItem={this.renderItem}
             keyExtractor={ (item) => item.ContentID }
             refreshing={isRefreshing}
             onRefresh={this.handleRefresh}
@@ -186,8 +203,8 @@ class ContentDetailsScreen extends React.Component {
     return (
       <ScrollView style={{flex:1}} >
           <Image style={styles.landscapeImage} source={{uri:this.state.dataSource.ThumbImage}}  ></Image>
+          <Text style={styles.catpion}>{this.state.dataSource.Title}</Text>
           <HTML html={this.state.dataSource.Body} imagesMaxWidth={Dimensions.get('window').width} />
-          
       </ScrollView>
     );
   }
@@ -218,4 +235,7 @@ const styles = StyleSheet.create({
   landscapeImage:{
     height:150,resizeMode:'stretch'
   },
+  catpion:{
+    fontWeight:"bold",fontSize:20,margin:5
+  }
 });
