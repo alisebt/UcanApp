@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {create} from 'apisauce';
-import {Text, View,TouchableOpacity,ScrollView,TextInput,Alert} from 'react-native';
+import {Text, View,Button,ScrollView,TextInput,Alert} from 'react-native';
 import { getKey,saveKey,resetKey,checkAuthentication } from '../Common'
 
 class LoginScreen extends React.Component {
@@ -62,10 +62,8 @@ class LoginScreen extends React.Component {
                 <TextInput placeholder='Username' onChangeText={ TextInputValue =>this.setState({userName: TextInputValue })} />
                 <TextInput placeholder='Password' onChangeText={ TextInputValue =>this.setState({password: TextInputValue })} />
                 <View style={{margin:7}} />
-                       <TouchableOpacity onPress={this.Login.bind(this)}>
-                        <Text> Log In </Text>
-                      </TouchableOpacity>
-                  </ScrollView>
+                <Button onPress={this.Login.bind(this)} title="Login" />
+            </ScrollView>
             );
     }
   }
