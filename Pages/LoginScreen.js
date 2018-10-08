@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {create} from 'apisauce';
 import {Text, View,TouchableOpacity,ScrollView,TextInput,Alert} from 'react-native';
-import { getKey,saveKey,resetKey } from '../Common'
+import { getKey,saveKey,resetKey,checkAuthentication } from '../Common'
 
 class LoginScreen extends React.Component {
   state = {
@@ -10,19 +10,16 @@ class LoginScreen extends React.Component {
     auth_token: '',
     isAuthenticated:false
   }
-
-  async checkAuthentication(){
-    var s;
-    await getKey("auth_token").then((data)=>{s=data});
-    if (s!=null && s!=undefined && s!="") 
-    {
+  
+  async componentWillMount() {
+    await checkAuthentication().then((data) => {
       this.setState({
-        isAuthenticated:true
+        isAuthenticated: data
       });
-    }
+    });
   }
 
-    Login(){
+  Login(){
       const api = create({
         baseURL: 'https://core.ucan.ir/mobile/request.asmx',
         headers: {'Content-Type': 'application/json'}
@@ -42,7 +39,6 @@ class LoginScreen extends React.Component {
           dataSource: response.data.Result,
           auth_token: response.data.Result.Token
        });
-          //alert("success login");
           saveKey("auth_token",response.data.Result.Token);
           this.props.navigation.navigate('Home');
       })
@@ -52,10 +48,7 @@ class LoginScreen extends React.Component {
       })
     }
   
-    async render() {
-        await this.checkAuthentication().then(
-          ()=>{
-        alert(this.state.isAuthenticated);
+    render() {
         if (this.state.isAuthenticated) {
             this.props.navigation.navigate('Home');
           }
@@ -69,13 +62,11 @@ class LoginScreen extends React.Component {
                 <TextInput placeholder='Username' onChangeText={ TextInputValue =>this.setState({userName: TextInputValue })} />
                 <TextInput placeholder='Password' onChangeText={ TextInputValue =>this.setState({password: TextInputValue })} />
                 <View style={{margin:7}} />
-               
                        <TouchableOpacity onPress={this.Login.bind(this)}>
                         <Text> Log In </Text>
                       </TouchableOpacity>
                   </ScrollView>
-            )
-      });
+            );
     }
   }
   

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import {create} from 'apisauce';
 import { createStackNavigator } from 'react-navigation';
-import {Text, View,ActivityIndicator,FlatList,TouchableOpacity} from 'react-native';
+import {Alert,Text, View,ActivityIndicator,FlatList,TouchableOpacity} from 'react-native';
 import { ListItem,Avatar, Button } from 'react-native-elements';
 import CategoryContentScreen from './Pages/CategoryContentScreen';
 import ContentDetailsScreen from './Pages/ContentDetailsScreen';
@@ -15,19 +15,17 @@ class App extends Component<Props> {
     this.state ={ isLoading: true};
     
   }
-
-  RemoveAuth(){
-    getKey("auth_token");
-    //alert(JSON.stringify(getKey("auth_token1")) );
-    resetKey("auth_token");
-
-    saveKey("auth_token","1");
-    getKey("auth_token");
-    //alert(JSON.stringify(getKey("auth_token1")));
-    
-  }
   
-  componentDidMount(){
+  async componentDidMount(){
+    await getKey("auth_token").then(
+      (data)=>
+      {
+        //Alert.alert(JSON.stringify(data));
+        //Alert.alert(data);
+      }
+    )
+    //Alert.alert(JSON.stringify(await getKey("auth_token")));
+
     const api = create({
       baseURL: 'https://core.ucan.ir/mobile/request.asmx',
       headers: {'Content-Type': 'application/json'}
@@ -67,14 +65,9 @@ class App extends Component<Props> {
           />
     </TouchableOpacity>
 )
+render() {
+    
 
-async getValue(){
-  var s; 
-  await getKey("auth_token").then((data)=>{s=data});
-  alert(JSON.stringify(s) );
-}
-
-  render() {
     if(this.state.isLoading){
       return(
         <View style={{flex: 1, padding: 20}}>
@@ -82,22 +75,12 @@ async getValue(){
         </View>
       )
     }
-
-    this.getValue();
-   
-
-     return(
-       <View>
-       <TouchableOpacity onPress={this.RemoveAuth.bind(this)}>
-                <Text> DELETE </Text>
-              </TouchableOpacity>
+      return(
       <FlatList
           data={this.state.dataSource}
           keyExtractor={ (item) => item.CategoryID }
           renderItem={this.renderItem}
         />
-              
-        </View>
      )
   }
 }
