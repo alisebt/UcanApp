@@ -39,7 +39,10 @@ export async function getKey(key) {
     await AsyncStorage.getItem("auth_token").then(
       (data)=>{
         var token = data;
-        if (typeof token === 'undefined' || JSON.stringify(token) ==='undefined') 
+        //Alert.alert("checkAuthentication : token=>"+ token);
+        console.log("Token:"+token);
+
+        if (token===null || typeof token === 'undefined' || JSON.stringify(token) ==='undefined') 
               result= false;
             else
               result= true;

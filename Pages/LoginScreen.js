@@ -26,8 +26,8 @@ class LoginScreen extends React.Component {
       })
       //userName:9124511355
       //password:92061703
-      //api.post('/UnifiedLoginCustomer', JSON.stringify({request: {Phone:this.state.userName,Password:this.state.password}}))
-      api.post('/UnifiedLoginCustomer', JSON.stringify({request: {Phone:"9124511355",Password:"92061703"}}))
+      api.post('/UnifiedLoginCustomer', JSON.stringify({request: {Phone:this.state.userName,Password:this.state.password}}))
+      //api.post('/UnifiedLoginCustomer', JSON.stringify({request: {Phone:"9124511355",Password:"92061703"}}))
       .then((response)=>{
         if (response.data.Status!=1) {
           Alert.alert("Username or password is incorrect");

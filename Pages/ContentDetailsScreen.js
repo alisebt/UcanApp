@@ -2,7 +2,7 @@ import React from 'react';
 import {create} from 'apisauce';
 import HTML from 'react-native-render-html';
 import {StyleSheet, Text, View,ActivityIndicator,Image,ScrollView,Dimensions,Alert,AsyncStorage,TextInput,Button} from 'react-native';
-//import { Button } from 'react-native-elements';
+import Video from 'react-native-video';
 
 class ContentDetailsScreen extends React.Component {
     constructor(props) {
@@ -72,7 +72,9 @@ class ContentDetailsScreen extends React.Component {
         //console.log
       })
     }
-  
+    onBuffer(){};
+    onEnd(){};
+    onError(){};
     render() {
       if(this.state.isLoading){
         return(
@@ -81,13 +83,44 @@ class ContentDetailsScreen extends React.Component {
           </View>
         )
       }
-  
+      
+      //VIDEO
+      console.log("DataSource:"+JSON.stringify(this.state.dataSource) );
+      if (this.state.dataSource.Type==2) {
+      
+      console.log("DataSource Type:"+this.state.dataSource.Type );
+      console.log("DataSource Path:"+this.state.dataSource.AttachmentList[0].Files[0].Path );
+        return (
+          <ScrollView style={{flex:1,margin:5}} >
+            <Video source={{uri: this.state.dataSource.AttachmentList[0].Files[0].Path}}   // Can be a URL or a local file.
+              ref={(ref) => {
+                this.player = ref
+              }}                                      // Store reference
+              onBuffer={this.onBuffer}                // Callback when remote video is buffering
+              onEnd={this.onEnd}                      // Callback when playback finishes
+              onError={this.videoError}               // Callback when video cannot be loaded
+              style={styles.backgroundVideo}
+              rotateToFullScreen = {true}
+              
+               />
+             <Text style={styles.catpion}>{this.state.dataSource.Title}</Text>
+            <HTML html={this.state.dataSource.Body} imagesMaxWidth={Dimensions.get('window').width} />
+            <TextInput ref={input => { this.txtMessage = input }}  
+                      style={styles.textInput} 
+                      placeholder='Enter your comment here.' 
+                      onChangeText={ TextInputValue =>this.setState({comment: TextInputValue })} />
+            <Button  onPress={this.AddComment.bind(this)} title="Add Comment" />
+          </ScrollView>
+        );
+      }
+
+
+      //NEWS
       return (
         <ScrollView style={{flex:1,margin:5}} >
             <Image style={styles.landscapeImage} source={{uri:this.state.dataSource.ThumbImage}}  ></Image>
             <Text style={styles.catpion}>{this.state.dataSource.Title}</Text>
             <HTML html={this.state.dataSource.Body} imagesMaxWidth={Dimensions.get('window').width} />
-            {/* <Text>Token : {this.state.token}</Text> */}
             <TextInput ref={input => { this.txtMessage = input }}  
                       style={styles.textInput} 
                       placeholder='Enter your comment here.' 
@@ -115,7 +148,10 @@ class ContentDetailsScreen extends React.Component {
     },
     catpion:{
       fontWeight:"bold",fontSize:20,margin:5
-    }
+    },
+    backgroundVideo: {
+      height:300,resizeMode:'stretch'
+    },
   });
   
   export default ContentDetailsScreen
