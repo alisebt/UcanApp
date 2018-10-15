@@ -18,7 +18,7 @@ class SideMenu extends Component {
         <ScrollView>
           <View>
             <Text style={styles.sectionHeadingStyle}>
-              Section 1
+              Main Pages
             </Text>
             <View style={styles.navSectionStyle}>
               <Text style={styles.navItemStyle} onPress={this.navigateToScreen('Home')}>
@@ -28,14 +28,14 @@ class SideMenu extends Component {
           </View>
           <View>
             <Text style={styles.sectionHeadingStyle}>
-              Section 2
+              Other Pages
             </Text>
             <View style={styles.navSectionStyle}>
               <Text style={styles.navItemStyle} onPress={this.navigateToScreen('Login')}>
                 Login
               </Text>
-              <Text style={styles.navItemStyle} onPress={this.navigateToScreen('Page3')}>
-                Page3
+              <Text style={styles.navItemStyle} onPress={this.navigateToScreen('Profile')}>
+                Profile
               </Text>
             </View>            
           </View>

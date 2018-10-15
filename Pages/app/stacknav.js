@@ -12,7 +12,7 @@ import HomeScreen from "../HomeScreen";
 import CategoryContentScreen from '../CategoryContentScreen';
 import ContentDetailsScreen from '../ContentDetailsScreen';
 import LoginScreen from '../LoginScreen';
-//import DetailScreen from "./DetailScreen";
+import ProfileScreen from '../ProfileScreen';
 
 const stackNav = StackNavigator({
   Home: {
@@ -28,6 +28,9 @@ const stackNav = StackNavigator({
   },
   Login:{
     screen: LoginScreen
+  },
+  Profile:{
+    screen: ProfileScreen
   },
   CategoryContent:{
     screen: CategoryContentScreen
