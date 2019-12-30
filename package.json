@@ -9,7 +9,7 @@
   "dependencies": {
     "@babel/runtime": "^7.1.2",
     "apisauce": "^0.16.0",
-    "axios": "^0.18.0",
+    "axios": "^0.18.1",
     "babel-plugin-module-resolver": "^3.1.1",
     "prop-types": "^15.6.2",
     "react": "16.5.0",
